@@ -7,6 +7,10 @@ import settingsRoutes from './routes/settings.js'
 import contactsRoutes from './routes/contacts.js'
 import sosRoutes from './routes/sos.js'
 import fcmRoutes from './routes/fcm.js'
+import alertsRoutes from './routes/alerts.js'
+import communityRoutes from './routes/community.js'
+import savedRoutesRoutes from './routes/savedRoutes.js'
+import checkinsRoutes from './routes/checkins.js'
 
 export function createApp() {
   const app = express()
@@ -26,6 +30,10 @@ export function createApp() {
   app.use('/api/contacts', contactsRoutes)
   app.use('/api/sos', sosRoutes)
   app.use('/api/fcm', fcmRoutes)
+  app.use('/api/alerts', alertsRoutes)
+  app.use('/api/community', communityRoutes)
+  app.use('/api/routes', savedRoutesRoutes)
+  app.use('/api/checkins', checkinsRoutes)
 
   // 404 for anything else under /api
   app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found.' }))
