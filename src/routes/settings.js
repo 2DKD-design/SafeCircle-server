@@ -8,16 +8,17 @@ router.get('/', requireAuth, async (req, res) => {
 })
 
 // Partial update. Body may include any of: name, phone, homeArea,
-// voiceSettings (object, merged shallowly), notificationPrefs (object,
-// merged shallowly). Email/password/contacts are not changed here.
+// avatarUrl, voiceSettings (object, merged shallowly), notificationPrefs
+// (object, merged shallowly). Email/password/contacts are not changed here.
 router.put('/', requireAuth, async (req, res) => {
   try {
-    const { name, phone, homeArea, voiceSettings, notificationPrefs } = req.body || {}
+    const { name, phone, homeArea, avatarUrl, voiceSettings, notificationPrefs } = req.body || {}
     const user = req.user
 
     if (name !== undefined) user.name = name
     if (phone !== undefined) user.phone = phone
     if (homeArea !== undefined) user.homeArea = homeArea
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl
     if (voiceSettings !== undefined) {
       user.voiceSettings = { ...user.voiceSettings.toObject(), ...voiceSettings }
     }

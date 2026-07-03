@@ -52,10 +52,16 @@ const UserSchema = new Schema(
     passwordHash: { type: String, required: true },
     phone: { type: String, default: '' },
     homeArea: { type: String, default: '' },
+    // Data URL (base64) or hosted image URL for the user's profile picture.
+    avatarUrl: { type: String, default: '' },
     contacts: { type: [ContactSchema], default: [] },
     voiceSettings: { type: VoiceSettingsSchema, default: () => ({}) },
     notificationPrefs: { type: NotificationPrefsSchema, default: () => ({}) },
     fcmTokens: { type: [String], default: [] },
+    // "Forgot password" flow: a hashed, time-limited token. We never store
+    // the raw token — only its SHA-256 hash — same principle as a password.
+    resetPasswordTokenHash: { type: String, default: null, select: false },
+    resetPasswordExpires: { type: Date, default: null, select: false },
   },
   {
     timestamps: true,
@@ -65,6 +71,8 @@ const UserSchema = new Schema(
         delete ret._id
         delete ret.__v
         delete ret.passwordHash
+        delete ret.resetPasswordTokenHash
+        delete ret.resetPasswordExpires
         return ret
       },
     },
