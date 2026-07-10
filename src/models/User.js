@@ -45,54 +45,6 @@ const NotificationPrefsSchema = new Schema(
   { _id: false }
 )
 
-// A user's saved routes (SafeRoutes page). Kept as a private, embedded list
-// on the user — like contacts — rather than a shared collection, since only
-// the owner ever sees their own saved routes.
-const PointSchema = new Schema(
-  {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
-    label: { type: String, default: '' },
-  },
-  { _id: false }
-)
-
-const RouteSchema = new Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    from: { type: String, required: true, trim: true },
-    to: { type: String, required: true, trim: true },
-    fromPoint: { type: PointSchema, default: null },
-    toPoint: { type: PointSchema, default: null },
-    travelMode: { type: String, default: 'walking' },
-    rating: { type: Schema.Types.Mixed, default: '—' },
-    lastUsed: { type: String, default: '' },
-  },
-  {
-    toJSON: {
-      virtuals: true,
-      transform: (_doc, ret) => {
-        ret.id = ret._id.toString()
-        delete ret._id
-      },
-    },
-  }
-)
-
-// A single in-progress "walk me home" check-in. Only one can be active at a
-// time, so it lives directly on the user rather than a separate collection
-// (finished check-ins move to CheckInLog instead).
-const ActiveCheckInSchema = new Schema(
-  {
-    startedAt: { type: Number, required: true },
-    endsAt: { type: Number, required: true },
-    minutes: { type: Number, required: true },
-    note: { type: String, default: '' },
-    contactsNotified: { type: Number, default: 0 },
-  },
-  { _id: false }
-)
-
 const UserSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -103,15 +55,9 @@ const UserSchema = new Schema(
     // Data URL (base64) or hosted image URL for the user's profile picture.
     avatarUrl: { type: String, default: '' },
     contacts: { type: [ContactSchema], default: [] },
-    routes: { type: [RouteSchema], default: [] },
     voiceSettings: { type: VoiceSettingsSchema, default: () => ({}) },
     notificationPrefs: { type: NotificationPrefsSchema, default: () => ({}) },
     fcmTokens: { type: [String], default: [] },
-    // Alert ids this user has dismissed from their own feed. Alerts
-    // themselves are shared/community data (see models/Alert.js) — dismiss
-    // only hides one for this user, it doesn't delete it for everyone.
-    dismissedAlertIds: { type: [String], default: [] },
-    activeCheckIn: { type: ActiveCheckInSchema, default: null },
     // "Forgot password" flow: a hashed, time-limited token. We never store
     // the raw token — only its SHA-256 hash — same principle as a password.
     resetPasswordTokenHash: { type: String, default: null, select: false },
@@ -127,7 +73,6 @@ const UserSchema = new Schema(
         delete ret.passwordHash
         delete ret.resetPasswordTokenHash
         delete ret.resetPasswordExpires
-        delete ret.dismissedAlertIds
         return ret
       },
     },

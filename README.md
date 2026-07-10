@@ -53,18 +53,6 @@ usually don't need to change it.
 | GET    | /api/sos/history    | yes  | —                                        |
 | POST   | /api/fcm/register   | yes  | `{ token }`                              |
 | POST   | /api/fcm/unregister | yes  | `{ token }`                              |
-| GET    | /api/alerts             | yes  | —                                      |
-| POST   | /api/alerts             | yes  | `{ title, body, place, severity, sourceUrl }` |
-| POST   | /api/alerts/:id/dismiss | yes  | — (hides it from *this* user only)     |
-| GET    | /api/community           | yes  | —                                     |
-| POST   | /api/community           | yes  | `{ place, text, tags }`               |
-| POST   | /api/community/:id/like  | yes  | —                                     |
-| GET    | /api/routes         | yes  | —                                        |
-| POST   | /api/routes         | yes  | `{ name, from, to, fromPoint, toPoint, travelMode, rating }` |
-| DELETE | /api/routes/:id     | yes  | —                                        |
-| GET    | /api/checkins        | yes  | — (returns `{ activeCheckIn, checkInLog }`) |
-| POST   | /api/checkins/start  | yes  | `{ minutes, note }`                      |
-| POST   | /api/checkins/end    | yes  | `{ status }` (`safe` \| `sos` \| `expired`) |
 
 Authenticated requests need `Authorization: Bearer <token>` (the token
 returned by signup/login).
@@ -73,4 +61,4 @@ returned by signup/login).
 
 - **SOS notifications**: `/sos/trigger` records the event and (if configured) sends a confirmation push to the *reporting user's own* devices. It doesn't yet text/call/push the emergency contacts themselves — that needs a provider like Twilio (SMS) plus each contact having a way to receive it. Wire that up in `src/routes/sos.js`.
 - **Passwords**: hashed with bcrypt, never returned in API responses.
-- **Data model**: one `User` document holds profile, contacts, saved routes, voice settings, notification prefs, and the current active check-in (if any). `SosEvent` and `CheckInLog` are separate collections for history. `Alert` and `CommunityPost` are shared collections — every signed-in user sees the same feed. Dismissing an alert doesn't delete it; it just adds the alert's id to that user's `dismissedAlertIds`, so it drops out of *their* feed only.
+- **Data model**: one `User` document holds profile, contacts, voice settings and notification prefs; `SosEvent` is a separate collection for history.
